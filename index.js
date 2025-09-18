@@ -36,9 +36,23 @@ async function run() {
 
     app.post('/users', async (req, res) => {
       const userProfile = req.body;
-      console.log(req.body)
-      const result = await usersCollection.insertOne(userProfile)
-      res.send(result)
+      console.log(userProfile)
+
+      const query = { email: userProfile.email }
+      const updatedDoc = {
+        $set: userProfile
+      };
+      const options = {
+        upsert:true
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc, options);
+      if (result.upsertedId) {
+        return res.send ((result.upsertedId))
+      }
+
+      else{
+        res.send(result)
+      }
     })
 
 
