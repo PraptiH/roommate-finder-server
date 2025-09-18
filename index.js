@@ -24,18 +24,36 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
+
+    // users API
+
+    const usersCollection = client.db('roommatefinder').collection("users")
+
+    app.get('/users', async (req, res) => {
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.post('/users', async (req, res) => {
+      const userProfile = req.body;
+      console.log(req.body)
+      const result = await usersCollection.insertOne(userProfile)
+      res.send(result)
+    })
+
+
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('RoommateFinder Server is Running!!!!')
- })
+  res.send('RoommateFinder Server is Running!!!!')
+})
 
-app.listen(port,()=>{
-    console.log(`server is running on port ${port}`)
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`)
 })
