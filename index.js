@@ -25,6 +25,21 @@ async function run() {
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
 
+    //Posts API
+    const postsCollection = client.db('roommatefinder').collection("posts")
+    
+    app.get('/posts',async(req,res)=>{
+      const result = await postsCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.post('/posts',async(req,res)=>{
+      const newPost = req.body;
+      console.log(newPost)
+      const result = await postsCollection.insertOne(newPost)
+      res.send(result)
+    })
+
     // users API
 
     const usersCollection = client.db('roommatefinder').collection("users")
