@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config()
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 3000
 
 const uri = `mongodb+srv://${process.env.DB_User}:${process.env.DB_Password}@cluster0.ndmztgi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -33,10 +33,29 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/posts/:id', async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await postsCollection.findOne(query)
+      res.send(result)
+    })
+
     app.post('/posts',async(req,res)=>{
       const newPost = req.body;
       console.log(newPost)
       const result = await postsCollection.insertOne(newPost)
+      res.send(result)
+    })
+
+    app.put('/posts/:id', async(req, res)=>{
+      const id =req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true}
+      const updatedPost = req.body
+      const updatedDoc ={
+        $set: updatedPost
+      }
+      const result = await postsCollection.updateOne(filter, updatedDoc, options)
       res.send(result)
     })
 
@@ -46,6 +65,13 @@ async function run() {
 
     app.get('/users', async (req, res) => {
       const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
+      app.get('/users/:id', async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await usersCollection.findOne(query)
       res.send(result)
     })
 
