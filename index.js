@@ -28,6 +28,11 @@ async function run() {
     //Posts API
     const postsCollection = client.db('roommatefinder').collection("posts")
     
+    app.get('/homePosts',async(req,res)=>{
+      const result = await postsCollection.find({ availability: "Available" }).limit(6).toArray()
+      res.send(result)
+    })
+
     app.get('/posts',async(req,res)=>{
       const result = await postsCollection.find().toArray()
       res.send(result)
