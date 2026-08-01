@@ -20,53 +20,52 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
+   
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
 
     //Posts API
     const postsCollection = client.db('roommatefinder').collection("posts")
-    
-    app.get('/homePosts',async(req,res)=>{
+
+    app.get('/homePosts', async (req, res) => {
       const result = await postsCollection.find({ availability: "Available" }).limit(6).toArray()
       res.send(result)
     })
 
-    app.get('/posts',async(req,res)=>{
+    app.get('/posts', async (req, res) => {
       const result = await postsCollection.find().toArray()
       res.send(result)
     })
 
-    app.get('/posts/:id', async(req,res)=>{
+    app.get('/posts/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await postsCollection.findOne(query)
       res.send(result)
     })
 
-    app.post('/posts',async(req,res)=>{
+    app.post('/posts', async (req, res) => {
       const newPost = req.body;
       console.log(newPost)
       const result = await postsCollection.insertOne(newPost)
       res.send(result)
     })
 
-    app.put('/posts/:id', async(req, res)=>{
-      const id =req.params.id;
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert: true}
+    app.put('/posts/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
       const updatedPost = req.body
-      const updatedDoc ={
+      const updatedDoc = {
         $set: updatedPost
       }
       const result = await postsCollection.updateOne(filter, updatedDoc, options)
       res.send(result)
     })
 
-    app.delete('/posts/:id', async(req,res)=>{
+    app.delete('/posts/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await postsCollection.deleteOne(query)
       res.send(result)
     })
@@ -80,9 +79,9 @@ async function run() {
       res.send(result)
     })
 
-      app.get('/users/:id', async(req,res)=>{
+    app.get('/users/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await usersCollection.findOne(query)
       res.send(result)
     })
@@ -96,14 +95,14 @@ async function run() {
         $set: userProfile
       };
       const options = {
-        upsert:true
+        upsert: true
       }
       const result = await usersCollection.updateOne(query, updatedDoc, options);
       if (result.upsertedId) {
-        return res.send ((result.upsertedId))
+        return res.send((result.upsertedId))
       }
 
-      else{
+      else {
         res.send(result)
       }
     })
